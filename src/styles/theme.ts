@@ -1,3 +1,4 @@
+// Exporta o tema padrão da aplicação, contendo cores, tipografia e espaçamentos
 export default {
     colors: {
         primary: '#2A86FF',
@@ -9,21 +10,11 @@ export default {
         white: '#FFFFFF',
     },
     typography: {
-        title: {
-            fontSize: 24,
-            fontWeight: 'bold',
-        },
-        subtitle: {
-            fontSize: 18,
-            fontWeight: '500',
-        },
-        body: {
-            fontSize: 16,
-        },
+        title: { fontSize: 24, fontWeight: 'bold' },
+        subtitle: { fontSize: 18, fontWeight: '500' },
+        body: { fontSize: 16 },
     },
     spacing: {
-        small: 8,
-        medium: 16,
-        large: 24,
-    },
+        small: 8, medium: 16, large: 24,
+        },
 };
