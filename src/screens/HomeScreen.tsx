@@ -1,21 +1,23 @@
-import { FontAwesome } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { FontAwesome } from '@expo/vector-icons'; // Importa ícones do FontAwesome
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa AsyncStorage para armazenamento local
+import { useFocusEffect } from '@react-navigation/native'; // Importa hook para executar efeito ao focar na tela
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'; // Importa tipagem para navegação stack
 import React, { useState } from 'react';
-import { FlatList, RefreshControl, TouchableOpacity } from 'react-native';
-import { Button, Icon } from 'react-native-elements';
-import styled from 'styled-components/native';
-import { HeaderContainer, HeaderTitle } from '../components/Header';
-import theme from '../styles/theme';
-import { Appointment } from '../types/appointments';
-import { Doctor } from '../types/doctors';
-import { RootStackParamList } from '../types/navigation';
+import { FlatList, RefreshControl, TouchableOpacity } from 'react-native'; // Importa componentes nativos
+import { Button, Icon } from 'react-native-elements'; // Importa componentes de UI
+import styled from 'styled-components/native'; // Importa styled-components para estilização
+import { HeaderContainer, HeaderTitle } from '../components/Header'; // Importa componentes do cabeçalho
+import theme from '../styles/theme'; // Importa tema de estilos
+import { Appointment } from '../types/appointments'; // Importa tipagem de consulta
+import { Doctor } from '../types/doctors'; // Importa tipagem de médico
+import { RootStackParamList } from '../types/navigation'; // Importa tipagem das rotas
 
+// Tipagem das props da tela, incluindo navegação
 type HomeScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
 };
 
+// Lista fixa de médicos disponíveis para exibir informações nas consultas
 const doctors: Doctor[] = [
   {
     id: '1',
@@ -37,10 +39,13 @@ const doctors: Doctor[] = [
   },
 ];
 
+// Componente principal da tela inicial
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  // Estados para armazenar as consultas e o estado de atualização
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Função para carregar as consultas do AsyncStorage
   const loadAppointments = async () => {
     try {
       const storedAppointments = await AsyncStorage.getItem('appointments');
@@ -52,22 +57,26 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  // Carrega as consultas toda vez que a tela ganha foco
   useFocusEffect(
     React.useCallback(() => {
       loadAppointments();
     }, [])
   );
 
+  // Função para atualizar a lista ao puxar para baixo
   const onRefresh = async () => {
     setRefreshing(true);
     await loadAppointments();
     setRefreshing(false);
   };
 
+  // Função para buscar informações do médico pelo id
   const getDoctorInfo = (doctorId: string): Doctor | undefined => {
     return doctors.find(doctor => doctor.id === doctorId);
   };
 
+  // Função para renderizar cada item da lista de consultas
   const renderAppointment = ({ item }: { item: Appointment }) => {
     const doctor = getDoctorInfo(item.doctorId);
 
@@ -95,6 +104,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     );
   };
 
+  // Renderização da tela, incluindo cabeçalho, botão e lista de consultas
   return (
     <Container>
       <HeaderContainer>
@@ -102,6 +112,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </HeaderContainer>
 
       <Content>
+        {/* Botão para agendar nova consulta */}
         <Button
           title="Agendar Nova Consulta"
           icon={
@@ -121,6 +132,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           onPress={() => navigation.navigate('CreateAppointment')}
         />
 
+        {/* Lista de consultas agendadas */}
         <AppointmentList
           data={appointments}
           keyExtractor={(item: Appointment) => item.id}
@@ -137,20 +149,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
 };
 
+// Estilização do container principal da tela
 const Container = styled.View`
   flex: 1;
   background-color: ${theme.colors.background};
 `;
 
+// Estilização do conteúdo principal da tela
 const Content = styled.View`
   flex: 1;
   padding: ${theme.spacing.medium}px;
 `;
 
+// Estilização da lista de consultas
 const AppointmentList = styled(FlatList)`
   flex: 1;
 `;
 
+// Estilização do cartão de cada consulta
 const AppointmentCard = styled.View`
   background-color: ${theme.colors.white};
   border-radius: 8px;
@@ -165,6 +181,7 @@ const AppointmentCard = styled.View`
   shadow-offset: 0px 2px;
 `;
 
+// Estilização da imagem do médico
 const DoctorImage = styled.Image`
   width: 60px;
   height: 60px;
@@ -172,16 +189,19 @@ const DoctorImage = styled.Image`
   margin-right: ${theme.spacing.medium}px;
 `;
 
+// Estilização do container das informações da consulta
 const InfoContainer = styled.View`
   flex: 1;
 `;
 
+// Estilização do nome do médico
 const DoctorName = styled.Text`
   font-size: ${theme.typography.subtitle.fontSize}px;
   font-weight: ${theme.typography.subtitle.fontWeight};
   color: ${theme.colors.text};
 `;
 
+// Estilização da especialidade do médico
 const DoctorSpecialty = styled.Text`
   font-size: ${theme.typography.body.fontSize}px;
   color: ${theme.colors.text};
@@ -189,12 +209,14 @@ const DoctorSpecialty = styled.Text`
   margin-bottom: 4px;
 `;
 
+// Estilização da data e hora da consulta
 const DateTime = styled.Text`
   font-size: ${theme.typography.body.fontSize}px;
   color: ${theme.colors.primary};
   margin-top: 4px;
 `;
 
+// Estilização da descrição da consulta
 const Description = styled.Text`
   font-size: ${theme.typography.body.fontSize}px;
   color: ${theme.colors.text};
@@ -202,6 +224,7 @@ const Description = styled.Text`
   margin-top: 4px;
 `;
 
+// Estilização do status da consulta
 const Status = styled.Text<{ status: string }>`
   font-size: ${theme.typography.body.fontSize}px;
   color: ${(props: { status: string }) => props.status === 'pending' ? theme.colors.error : theme.colors.success};
@@ -209,17 +232,20 @@ const Status = styled.Text<{ status: string }>`
   font-weight: bold;
 `;
 
+// Estilização do container dos botões de ação
 const ActionButtons = styled.View`
   flex-direction: row;
   justify-content: flex-end;
   margin-top: ${theme.spacing.small}px;
 `;
 
+// Estilização dos botões de ação (editar/excluir)
 const ActionButton = styled(TouchableOpacity)`
   padding: ${theme.spacing.small}px;
   margin-left: ${theme.spacing.small}px;
 `;
 
+// Estilização do texto exibido quando não há consultas
 const EmptyText = styled.Text`
   text-align: center;
   color: ${theme.colors.text};
@@ -227,4 +253,4 @@ const EmptyText = styled.Text`
   margin-top: ${theme.spacing.large}px;
 `;
 
-export default HomeScreen;
+export default HomeScreen; // Exporta o componente para uso nas rotas
