@@ -1,3 +1,4 @@
+// Define o tipo Appointment, representando uma consulta médica agendada
 export type Appointment = {
     id: string;
     doctorId: string;
